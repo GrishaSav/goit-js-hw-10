@@ -19,18 +19,22 @@ function onInputChange() {
         clearAll();
         return;
     } else fetchCountries(searchCountryName).then(countryNames => {
-        if (countryNames.length < 2) {
+        if (countryNames.length === 1) {
             createCountrieCardInfo(countryNames);
-        } else if (countryNames.length < 10 && countryNames.length > 1) {
+        } else if (countryNames.length <= 10 && countryNames.length >= 1) {
             createCountrieList(countryNames);
         } else {
             clearAll();
             Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
         };
     })
-        .catch(() => {
+    .catch((error) => {
         clearAll();
-        Notiflix.Notify.failure('Oops, there is no country with that name.');
+        if (error.message === '404') {
+            Notiflix.Notify.failure('Oops, there is no country with that name');
+        } else {
+            Notiflix.Notify.failure('Oops, an error occurred: ' + error.message);
+        }
     });
 };
 
@@ -45,7 +49,7 @@ function createCountrieCardInfo(country) {
         <ul>
             <li class="country-card-field">Capital: <span class="country-value">${c.capital}</span></li>
             <li class="country-card-field">Population: <span class="country-value">${c.population}</span></li>
-            <li class="country-card-field">Languages: <span class="country-value">${Object.values(c.languages).join(',')}</span></li>
+            <li class="country-card-field">Languages: <span class="country-value">${Object.values(c.languages).join(', ')}</span></li>
         </ul>`
     info.innerHTML = readyCard;
 };
